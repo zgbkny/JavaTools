@@ -28,8 +28,11 @@ package com.sun.tools.doclets.internal.toolkit;
 import com.sun.tools.doclets.internal.toolkit.builders.*;
 import com.sun.tools.doclets.internal.toolkit.util.*;
 import com.sun.javadoc.*;
+
 import java.util.*;
 import java.io.*;
+
+import org.apache.log4j.Logger;
 
 /**
  * An abstract implementation of a Doclet.
@@ -41,6 +44,8 @@ import java.io.*;
  * @author Jamie Ho
  */
 public abstract class AbstractDoclet {
+	
+	Logger log = Logger.getLogger(AbstractDoclet.class);
 
     /**
      * The global configuration information for this run.
@@ -74,17 +79,21 @@ public abstract class AbstractDoclet {
      * @return true if the doclet executed without error.  False otherwise.
      */
     public boolean start(AbstractDoclet doclet, RootDoc root) {
+    	log.info("Abstract start");
         configuration = configuration();
         configuration.root = root;
+        log.info("Abstract start validDoclet");
         if (! isValidDoclet(doclet)) {
             return false;
         }
         try {
+        	log.info("Abstract start generation");
             doclet.startGeneration(root);
         } catch (Exception exc) {
             exc.printStackTrace();
             return false;
         }
+        log.info("Abstract start over");
         return true;
     }
 
@@ -112,16 +121,21 @@ public abstract class AbstractDoclet {
      * @see com.sun.javadoc.RootDoc
      */
     private void startGeneration(RootDoc root) throws Exception {
+    	log.info("AbstractDoclet startGeneration");
         if (root.classes().length == 0) {
             configuration.message.
                 error("doclet.No_Public_Classes_To_Document");
             return;
         }
+        log.info("AbstractDoclet startGeneration setOptions");
         configuration.setOptions();
         configuration.getDocletSpecificMsg().notice("doclet.build_version",
             configuration.getDocletSpecificBuildDate());
+        
+        log.info("AbstractDoclet startGeneration classtree");
         ClassTree classtree = new ClassTree(configuration, configuration.nodeprecated);
 
+        
         generateClassFiles(root, classtree);
         if (configuration.sourcepath != null && configuration.sourcepath.length() > 0) {
             StringTokenizer pathTokens = new StringTokenizer(configuration.sourcepath,
@@ -134,11 +148,13 @@ public abstract class AbstractDoclet {
                 first = false;
             }
         }
-
+        
         PackageListWriter.generate(configuration);
+        log.info("AbstractDoclet generatePackageFiles");
         generatePackageFiles(classtree);
-
+        log.info("AbstractDoclet generateOtherFiles");
         generateOtherFiles(root, classtree);
+        log.info("AbstractDoclet printReport");
         configuration.tagletManager.printReport();
     }
 
@@ -151,9 +167,12 @@ public abstract class AbstractDoclet {
     protected void generateOtherFiles(RootDoc root, ClassTree classtree) throws Exception {
         BuilderFactory builderFactory = configuration.getBuilderFactory();
         AbstractBuilder constantsSummaryBuilder = builderFactory.getConstantsSummaryBuider();
+        log.info("AbstractDoclet constantsSummaryBuilder build");
         constantsSummaryBuilder.build();
         AbstractBuilder serializedFormBuilder = builderFactory.getSerializedFormBuilder();
+        log.info("AbstractDoclet serializedFormBuilder build");
         serializedFormBuilder.build();
+        log.info("AbstractDoclet generateOtherFiles return");
     }
 
     /**
@@ -177,6 +196,7 @@ public abstract class AbstractDoclet {
      * @param classtree the data structure representing the class tree.
      */
     protected void generateClassFiles(RootDoc root, ClassTree classtree) {
+    	log.info("AbstractDoclet generateClassFiles(RootDoc root, ClassTree classtree)");
         generateClassFiles(classtree);
         PackageDoc[] packages = root.specifiedPackages();
         for (int i = 0; i < packages.length; i++) {

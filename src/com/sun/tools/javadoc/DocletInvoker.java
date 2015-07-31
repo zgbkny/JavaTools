@@ -35,16 +35,19 @@ import java.net.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.InvocationTargetException;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.StringTokenizer;
+
+import org.apache.log4j.Logger;
 
 /**
  * Class creates, controls and invokes doclets.
  * @author Neal Gafter (rewrite)
  */
 public class DocletInvoker {
+	
+	private Logger log = Logger.getLogger(DocletInvoker.class);
 
     private final Class docletClass;
 
@@ -155,6 +158,7 @@ public class DocletInvoker {
     /**
      * Generate documentation here.  Return true on success.  */
     public boolean start(RootDoc root) {
+    	log.info("DocletInvoker.start()");
         Object retVal;
         String methodName = "start";
         Class[] paramTypes = new Class[1];
@@ -163,6 +167,7 @@ public class DocletInvoker {
         params[0] = root;
         try {
             retVal = invoke(methodName, null, paramTypes, params);
+            log.info("DocletInvoker.invoke() over");
         } catch (DocletInvokeException exc) {
             return false;
         }
@@ -263,8 +268,10 @@ public class DocletInvoker {
     private Object invoke(String methodName, Object returnValueIfNonExistent,
                           Class[] paramTypes, Object[] params)
         throws DocletInvokeException {
+    		log.info("DocletInvoker.invoke() ");
             Method meth;
             try {
+            	log.info("methodName:" + methodName);
                 meth = docletClass.getMethod(methodName, paramTypes);
             } catch (NoSuchMethodException exc) {
                 if (returnValueIfNonExistent == null) {
@@ -288,6 +295,7 @@ public class DocletInvoker {
                 Thread.currentThread().getContextClassLoader();
             try {
                 Thread.currentThread().setContextClassLoader(appClassLoader);
+                log.info("DocletInvoker.invoke() meth.invoke");
                 return meth.invoke(null , params);
             } catch (IllegalArgumentException exc) {
                 messager.error(null, "main.internal_error_exception_thrown",

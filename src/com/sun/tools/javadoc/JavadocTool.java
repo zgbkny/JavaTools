@@ -173,7 +173,7 @@ public class JavadocTool extends com.sun.tools.javac.main.JavaCompiler {
         } catch (Abort ex) {}
 
         if (messager.nerrors() != 0) return null;
-
+        
         if (docClasses)
             return new RootDocImpl(docenv, javaNames, options);
         else

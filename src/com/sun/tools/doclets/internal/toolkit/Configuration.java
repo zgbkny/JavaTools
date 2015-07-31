@@ -29,8 +29,11 @@ import com.sun.tools.doclets.internal.toolkit.taglets.*;
 import com.sun.tools.doclets.internal.toolkit.util.*;
 import com.sun.tools.doclets.internal.toolkit.builders.BuilderFactory;
 import com.sun.javadoc.*;
+
 import java.util.*;
 import java.io.*;
+
+import org.apache.log4j.Logger;
 
 /**
  * Configure the output based on the options. Doclets should sub-class
@@ -47,6 +50,8 @@ import java.io.*;
  * @author Jamie Ho
  */
 public abstract class Configuration {
+	
+	private Logger log = Logger.getLogger(Configuration.class);
 
     /**
      * The factory for builders.
@@ -431,7 +436,9 @@ public abstract class Configuration {
     public void setOptions() {
         initPackageArray();
         setOptions(root.options());
+        log.info("configuration setOptions setSpecificDocletOptions");
         setSpecificDocletOptions(root.options());
+        log.info("configuration setoption over");
     }
 
 

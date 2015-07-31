@@ -29,8 +29,10 @@ import java.io.IOException;
 import java.io.FileInputStream;
 import java.io.File;
 
-import com.sun.javadoc.*;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggerFactory;
 
+import com.sun.javadoc.*;
 import com.sun.tools.javac.tree.JCTree.JCClassDecl;
 import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.util.List;
@@ -49,6 +51,8 @@ import com.sun.tools.javac.util.Position;
  */
 public class RootDocImpl extends DocImpl implements RootDoc {
 
+	Logger log = Logger.getLogger(RootDocImpl.class);
+	
     /**
      * list of classes specified on the command line.
      */
@@ -74,6 +78,9 @@ public class RootDocImpl extends DocImpl implements RootDoc {
      */
     public RootDocImpl(DocEnv env, List<JCClassDecl> classes, List<String> packages, List<String[]> options) {
         super(env, null);
+        log.info("RootDocImpl(DocEnv env, List<JCClassDecl> classes, List<String> packages, List<String[]> options)");
+        log.info("classes.size():" + classes.size());
+        log.info("packages.size():" + packages.size());
         this.options = options;
         setPackages(env, packages);
         setClasses(env, classes);
@@ -88,6 +95,7 @@ public class RootDocImpl extends DocImpl implements RootDoc {
      */
     public RootDocImpl(DocEnv env, List<String> classes, List<String[]> options) {
         super(env, null);
+        log.info("RootDocImpl(DocEnv env, List<String> classes, List<String[]> options)");
         this.options = options;
         cmdLinePackages = List.nil();
         ListBuffer<ClassDocImpl> classList = new ListBuffer<ClassDocImpl>();
@@ -99,6 +107,8 @@ public class RootDocImpl extends DocImpl implements RootDoc {
                 classList = classList.append(c);
         }
         cmdLineClasses = classList.toList();
+        log.info("cmdLinePackages:" + cmdLinePackages.size());
+        log.info("cmdLineClasses:" + cmdLineClasses.size());
     }
 
     /**
@@ -161,6 +171,7 @@ public class RootDocImpl extends DocImpl implements RootDoc {
      * @return an array of arrays of String.
      */
     public String[][] options() {
+    	log.info("RootDocImpl options");
         return options.toArray(new String[options.length()][]);
     }
 
@@ -188,6 +199,7 @@ public class RootDocImpl extends DocImpl implements RootDoc {
      * packages) to be documented.
      */
     public ClassDoc[] classes() {
+    	log.info("classes()");
         ListBuffer<ClassDocImpl> classesToDocument = new ListBuffer<ClassDocImpl>();
         for (ClassDocImpl cd : cmdLineClasses) {
             cd.addAllClasses(classesToDocument, true);

@@ -27,10 +27,12 @@ package com.sun.tools.doclets.formats.html;
 
 import com.sun.tools.doclets.internal.toolkit.*;
 import com.sun.tools.doclets.internal.toolkit.util.*;
-
 import com.sun.javadoc.*;
+
 import java.util.*;
 import java.io.*;
+
+import org.apache.log4j.Logger;
 
 /**
  * Configure the output based on the command line options.
@@ -51,6 +53,8 @@ import java.io.*;
  */
 public class ConfigurationImpl extends Configuration {
 
+	private Logger log = Logger.getLogger(ConfigurationImpl.class);
+	
     private static ConfigurationImpl instance = new ConfigurationImpl();
 
     /**
@@ -216,6 +220,8 @@ public class ConfigurationImpl extends Configuration {
      * @param options The array of option names and values.
      */
     public void setSpecificDocletOptions(String[][] options) {
+    	log.info("ConfigurationImpl setSpecificDocletOptions");
+    	
         for (int oi = 0; oi < options.length; ++oi) {
             String[] os = options[oi];
             String opt = os[0].toLowerCase();

@@ -27,10 +27,12 @@ package com.sun.tools.doclets.formats.html;
 import com.sun.tools.doclets.internal.toolkit.*;
 import com.sun.tools.doclets.internal.toolkit.builders.*;
 import com.sun.tools.doclets.internal.toolkit.util.*;
-
 import com.sun.javadoc.*;
+
 import java.util.*;
 import java.io.*;
+
+import org.apache.log4j.Logger;
 
 /**
  * The class with "start" method, calls individual Writers.
@@ -41,6 +43,9 @@ import java.io.*;
  *
  */
 public class HtmlDoclet extends AbstractDoclet {
+	
+	static Logger log = Logger.getLogger(HtmlDoclet.class);
+	
     public HtmlDoclet() {
         configuration = (ConfigurationImpl) configuration();
     }
@@ -58,6 +63,7 @@ public class HtmlDoclet extends AbstractDoclet {
      * @return true if the doclet ran without encountering any errors.
      */
     public static boolean start(RootDoc root) {
+    	log.info("HtmlDoclet start");
         try {
             HtmlDoclet doclet = new HtmlDoclet();
             return doclet.start(doclet, root);
@@ -87,7 +93,10 @@ public class HtmlDoclet extends AbstractDoclet {
      */
     protected void generateOtherFiles(RootDoc root, ClassTree classtree)
             throws Exception {
+    	log.info("HtmlDoclet generateOtherFiles");
         super.generateOtherFiles(root, classtree);
+        
+        log.info("HtmlDoclet generateOtherFiles do");
         if (configuration.linksource) {
             if (configuration.destDirName.length() > 0) {
                 SourceToHTMLConverter.convertRoot(configuration,
@@ -153,6 +162,7 @@ public class HtmlDoclet extends AbstractDoclet {
      * {@inheritDoc}
      */
     protected void generateClassFiles(ClassDoc[] arr, ClassTree classtree) {
+    	log.info("HtmlDoclet generateClassFiles(ClassDoc[] arr, ClassTree classtree)");
         Arrays.sort(arr);
         for(int i = 0; i < arr.length; i++) {
             if (!(configuration.isGeneratedDoc(arr[i]) && arr[i].isIncluded())) {
@@ -189,6 +199,7 @@ public class HtmlDoclet extends AbstractDoclet {
      * {@inheritDoc}
      */
     protected void generatePackageFiles(ClassTree classtree) throws Exception {
+    	log.info("HtmlDoclet generatePackage");
         PackageDoc[] packages = configuration.packages;
         if (packages.length > 1) {
             PackageIndexFrameWriter.generate(configuration);

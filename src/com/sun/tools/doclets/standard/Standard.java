@@ -25,11 +25,15 @@
 
 package com.sun.tools.doclets.standard;
 
+import org.apache.log4j.Logger;
+
 import com.sun.javadoc.*;
 import com.sun.tools.doclets.formats.html.*;
 
 
 public class Standard {
+	
+	private static Logger log = Logger.getLogger(Standard.class);
 
     public static final HtmlDoclet htmlDoclet = new HtmlDoclet();
 
@@ -38,6 +42,7 @@ public class Standard {
     }
 
     public static boolean start(RootDoc root) {
+    	log.info("standard start");
         return htmlDoclet.start(root);
     }
 

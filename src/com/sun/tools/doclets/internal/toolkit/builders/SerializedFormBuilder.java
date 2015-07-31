@@ -28,9 +28,12 @@ package com.sun.tools.doclets.internal.toolkit.builders;
 import com.sun.tools.doclets.internal.toolkit.util.*;
 import com.sun.tools.doclets.internal.toolkit.*;
 import com.sun.javadoc.*;
+
 import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;
+
+import org.apache.log4j.Logger;
 
 /**
  * Builds the serialized form.
@@ -44,6 +47,7 @@ import java.util.*;
  */
 public class SerializedFormBuilder extends AbstractBuilder {
 
+	Logger log = Logger.getLogger(SerializedFormBuilder.class);
     /**
      * The root element of the serialized form XML is {@value}.
      */
@@ -103,11 +107,15 @@ public class SerializedFormBuilder extends AbstractBuilder {
      * Build the serialized form.
      */
     public void build() throws IOException {
+    	log.info("SerializedFormBuilder build");
+    	log.info("SerializedFormBuilder serialClassFoundToDocument");
         if (! serialClassFoundToDocument(configuration.root.classes())) {
             //Nothing to document.
+        	log.info("SerializedFormBuilder serialClassFoundToDocument build return");
             return;
         }
         try {
+        	log.info("SerializedFormBuilder getSerializedFormWriter");
             writer = configuration.getWriterFactory().getSerializedFormWriter();
             if (writer == null) {
                 //Doclet does not support this output.
@@ -116,6 +124,7 @@ public class SerializedFormBuilder extends AbstractBuilder {
         } catch (Exception e) {
             throw new DocletAbortException();
         }
+        log.info("SerializedFormBuilder build(LayoutParser.getInstance(configuration).parseXML(NAME))");
         build(LayoutParser.getInstance(configuration).parseXML(NAME));
         writer.close();
     }

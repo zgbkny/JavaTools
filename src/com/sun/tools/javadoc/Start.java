@@ -26,7 +26,6 @@
 package com.sun.tools.javadoc;
 
 import com.sun.javadoc.*;
-
 import com.sun.tools.javac.main.CommandLine;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.List;
@@ -37,8 +36,9 @@ import java.io.IOException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-
 import java.util.StringTokenizer;
+
+import org.apache.log4j.Logger;
 
 import static com.sun.tools.javac.code.Flags.*;
 
@@ -51,6 +51,9 @@ import static com.sun.tools.javac.code.Flags.*;
  * @author Neal Gafter (rewrite)
  */
 class Start {
+	
+	private Logger log = Logger.getLogger(Start.class);
+	
     /** Context for this invocation. */
     private final Context context;
 
@@ -219,6 +222,7 @@ class Start {
         // Parse arguments
         for (int i = 0 ; i < argv.length ; i++) {
             String arg = argv[i];
+            log.info(arg);
             if (arg.equals("-subpackages")) {
                 oneArg(argv, i++);
                 addToList(subPackages, argv[i]);
@@ -320,6 +324,7 @@ class Start {
             // call doclet for its options
             // other arg starts with - is invalid
             else if ( arg.startsWith("-") ) {
+            	log.info("doclet options");
                 int optionLength;
                 optionLength = docletInvoker.optionLength(arg);
                 if (optionLength < 0) {
@@ -335,31 +340,35 @@ class Start {
                     }
                     ListBuffer<String> args = new ListBuffer<String>();
                     for (int j = 0; j < optionLength-1; ++j) {
+                    	
                         args.append(argv[++i]);
                     }
-                    setOption(arg, args.toList());
+                    setOption(arg, args.toList()); // 将命令和参数设置给options
                 }
             } else {
-                javaNames.append(arg);
+            	
+                javaNames.append(arg); // 待生成文档的文件目录
             }
         }
 
         if (javaNames.isEmpty() && subPackages.isEmpty()) {
             usageError("main.No_packages_or_classes_specified");
         }
-
+        // 检验命令的有效性
         if (!docletInvoker.validOptions(options.toList())) {
             // error message already displayed
             exit();
         }
 
+        // 创建一个新的javadoc tool
         JavadocTool comp = JavadocTool.make0(context);
         if (comp == null) return false;
 
         if (showAccess == null) {
             setFilter(defaultFilter);
         }
-
+        log.info("docClasses:" + docClasses + " javaNames length:" + javaNames.length());
+        log.info("subPackages:" + subPackages.size());
         LanguageVersion languageVersion = docletInvoker.languageVersion();
         RootDocImpl root = comp.getRootDocImpl(
                 docLocale, encoding, showAccess,
@@ -369,6 +378,8 @@ class Start {
                 // legacy?
                 languageVersion == null || languageVersion == LanguageVersion.JAVA_1_1, quiet);
 
+        log.info("root.classes().length:" + root.classes().length);
+        
         // pass off control to the doclet
         boolean ok = root != null;
         if (ok) ok = docletInvoker.start(root);
@@ -409,7 +420,7 @@ class Start {
         if (docletClassName == null) {
             docletClassName = defaultDocletClassName;
         }
-
+        log.info("docletClassName:" + docletClassName);
         // attempt to find doclet
         docletInvoker = new DocletInvoker(messager,
                                           docletClassName, docletPath,
