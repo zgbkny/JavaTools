@@ -48,6 +48,7 @@ public class Options {
 
     /** Get the Options instance for this context. */
     public static Options instance(Context context) {
+    	
         Options instance = context.get(optionsKey);
         if (instance == null)
             instance = new Options(context);

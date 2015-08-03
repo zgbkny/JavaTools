@@ -26,8 +26,9 @@
 package com.sun.tools.javadoc;
 
 import java.io.*;
-
 import java.util.Collection;
+
+import org.apache.log4j.Logger;
 
 import com.sun.tools.javac.code.*;
 import com.sun.tools.javac.code.Symbol.*;
@@ -39,8 +40,8 @@ import com.sun.tools.javac.util.Paths;
 import com.sun.tools.javac.tree.*;
 import com.sun.tools.javac.tree.JCTree.*;
 import com.sun.tools.javac.util.*;
-
 import com.sun.javadoc.LanguageVersion;
+
 import static com.sun.javadoc.LanguageVersion.*;
 
 /**
@@ -51,6 +52,8 @@ import static com.sun.javadoc.LanguageVersion.*;
  *  @author Neal Gafter
  */
 public class JavadocTool extends com.sun.tools.javac.main.JavaCompiler {
+	
+	private Logger logger = Logger.getLogger(JavadocTool.class);
     DocEnv docenv;
 
     final Context context;
@@ -72,6 +75,7 @@ public class JavadocTool extends com.sun.tools.javac.main.JavaCompiler {
         enter = JavadocEnter.instance0(context);
         annotate = Annotate.instance(context);
         paths = Paths.instance(context);
+        logger.info("paths init" + paths.sourceSearchPath().size());
     }
 
     /**
@@ -123,6 +127,11 @@ public class JavadocTool extends com.sun.tools.javac.main.JavaCompiler {
                                       boolean docClasses,
                                       boolean legacyDoclet,
                       boolean quiet) throws IOException {
+    	logger.info("getRootDocImpl");
+    	
+    	for (String item : subPackages) {
+    		logger.info("subPackages: " + item);
+    	}
         docenv = DocEnv.instance(context);
         docenv.showAccess = filter;
     docenv.quiet = quiet;
@@ -136,12 +145,14 @@ public class JavadocTool extends com.sun.tools.javac.main.JavaCompiler {
         ListBuffer<String> names = new ListBuffer<String>();
         ListBuffer<JCCompilationUnit> classTrees = new ListBuffer<JCCompilationUnit>();
         ListBuffer<JCCompilationUnit> packTrees = new ListBuffer<JCCompilationUnit>();
-
+        
         try {
+        	logger.info("process JavaNames");
             for (List<String> it = javaNames; it.nonEmpty(); it = it.tail) {
                 String name = it.head;
                 if (!docClasses && name.endsWith(".java") && new File(name).exists()) {
                     docenv.notice("main.Loading_source_file", name);
+                    	logger.info(name);
                         JCCompilationUnit tree = parse(name);
                         classTrees.append(tree);
                 } else if (isValidPackageName(name)) {
@@ -152,26 +163,32 @@ public class JavadocTool extends com.sun.tools.javac.main.JavaCompiler {
                     docenv.error(null, "main.illegal_package_name", name);
                 }
             }
-
+            logger.info("!docClasses");
             if (!docClasses) {
                 // Recursively search given subpackages.  If any packages
                 //are found, add them to the list.
+            	
+            	
                 searchSubPackages(subPackages, names, excludedPackages);
 
                 // Parse the packages
                 for (List<String> packs = names.toList(); packs.nonEmpty(); packs = packs.tail) {
                     // Parse sources ostensibly belonging to package.
+                	
+                	
                     parsePackageClasses(packs.head, packTrees, excludedPackages);
                 }
-
+                logger.info("parsePackageClasses over");
                 if (messager.nerrors() != 0) return null;
-
+                
                 // Enter symbols for all files
                 docenv.notice("main.Building_tree");
+                logger.info("enter main start");
                 enter.main(classTrees.toList().appendList(packTrees.toList()));
+                logger.info("enter main over");
             }
         } catch (Abort ex) {}
-
+        
         if (messager.nerrors() != 0) return null;
         
         if (docClasses)
@@ -201,6 +218,8 @@ public class JavadocTool extends com.sun.tools.javac.main.JavaCompiler {
                                      ListBuffer<JCCompilationUnit> trees,
                                      List<String> excludedPackages)
         throws IOException {
+    	
+    	logger.info("parsePackageClasses ##");
         if (excludedPackages.contains(name)) {
             return;
         }
@@ -208,6 +227,7 @@ public class JavadocTool extends com.sun.tools.javac.main.JavaCompiler {
         docenv.notice("main.Loading_source_files_for_package", name);
         name = name.replace('.', File.separatorChar);
         for (File pathname : paths.sourceSearchPath()) {
+        	logger.info(pathname);
             File f = new File(pathname, name);
             String names[] = f.list();
             // if names not null, then found directory with source files
@@ -243,11 +263,16 @@ public class JavadocTool extends com.sun.tools.javac.main.JavaCompiler {
         // Should the bootclasspath/extdirs also be searched for classes?
         java.util.List<File> pathnames = new java.util.ArrayList<File>();
         if (paths.sourcePath() != null)
-            for (File elt : paths.sourcePath())
+            for (File elt : paths.sourcePath()) {
+            	logger.info(paths.sourcePath());
                 pathnames.add(elt);
-        for (File elt : paths.userClassPath())
+            }
+        for (File elt : paths.userClassPath()) {
+        	logger.info(paths.userClassPath());
             pathnames.add(elt);
+        }
 
+        
         for (String subPackage : subPackages)
             searchSubPackage(subPackage, packages, excludedPackages, pathnames);
     }

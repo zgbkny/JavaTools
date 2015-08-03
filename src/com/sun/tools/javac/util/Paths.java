@@ -65,7 +65,7 @@ import static javax.tools.StandardLocation.*;
  *  deletion without notice.</b>
  */
 public class Paths {
-
+	private static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(Paths.class);
     /** The context key for the todo list */
     protected static final Context.Key<Paths> pathsKey =
         new Context.Key<Paths>();
@@ -73,8 +73,10 @@ public class Paths {
     /** Get the Paths instance for this context. */
     public static Paths instance(Context context) {
         Paths instance = context.get(pathsKey);
+        logger.info("Paths instance" + instance);
         if (instance == null)
             instance = new Paths(context);
+        
         return instance;
     }
 
@@ -105,14 +107,20 @@ public class Paths {
 
     protected Paths(Context context) {
         context.put(pathsKey, this);
+        
         pathsForLocation = new HashMap<Location,Path>(16);
+        
         setContext(context);
+        
     }
 
     void setContext(Context context) {
         log = Log.instance(context);
+        
         options = Options.instance(context);
+        
         lint = Lint.instance(context);
+        
     }
 
     /** Whether to warn about non-existent path elements */
@@ -506,6 +514,8 @@ public class Paths {
             Path sourcePath = getPathForLocation(SOURCE_PATH);
             Path userClassPath = getPathForLocation(CLASS_PATH);
             sourceSearchPath = sourcePath != null ? sourcePath : userClassPath;
+            logger.info("sourcePath:" + sourcePath);
+            logger.info("userClassPath:" + userClassPath);
         }
         return Collections.unmodifiableCollection(sourceSearchPath);
     }

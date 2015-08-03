@@ -191,6 +191,7 @@ public class RootDocImpl extends DocImpl implements RootDoc {
         for (ClassDocImpl cd : cmdLineClasses) {
             cd.addAllClasses(classesToDocument, true);
         }
+    
         return (ClassDoc[])classesToDocument.toArray(new ClassDocImpl[classesToDocument.length()]);
     }
 
@@ -207,6 +208,7 @@ public class RootDocImpl extends DocImpl implements RootDoc {
         for (PackageDocImpl pd : cmdLinePackages) {
             pd.addAllClassesTo(classesToDocument);
         }
+        log.info("classes() size" + classesToDocument.length());
         return classesToDocument.toArray(new ClassDocImpl[classesToDocument.length()]);
     }
 

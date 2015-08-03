@@ -132,7 +132,7 @@ public abstract class AbstractDoclet {
         configuration.getDocletSpecificMsg().notice("doclet.build_version",
             configuration.getDocletSpecificBuildDate());
         
-        log.info("AbstractDoclet startGeneration classtree");
+        log.info("AbstractDoclet startGeneration classtree " + configuration.root.classes().length);
         ClassTree classtree = new ClassTree(configuration, configuration.nodeprecated);
 
         

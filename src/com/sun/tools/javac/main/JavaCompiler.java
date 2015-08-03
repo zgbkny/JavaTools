@@ -75,6 +75,8 @@ import javax.lang.model.SourceVersion;
  *  deletion without notice.</b>
  */
 public class JavaCompiler implements ClassReader.SourceCompleter {
+	
+	private org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(JavaCompiler.class);
     /** The context key for the compiler. */
     protected static final Context.Key<JavaCompiler> compilerKey =
         new Context.Key<JavaCompiler>();
@@ -551,6 +553,7 @@ public class JavaCompiler implements ClassReader.SourceCompleter {
      */
     @Deprecated
     public JCTree.JCCompilationUnit parse(String filename) throws IOException {
+    	logger.info("JavaCompiler parse(filename)");
         JavacFileManager fm = (JavacFileManager)fileManager;
         return parse(fm.getJavaFileObjectsFromStrings(List.of(filename)).iterator().next());
     }

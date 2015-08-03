@@ -27,7 +27,10 @@ package com.sun.tools.doclets.internal.toolkit.util;
 
 import com.sun.tools.doclets.internal.toolkit.*;
 import com.sun.javadoc.*;
+
 import java.util.*;
+
+import org.apache.log4j.Logger;
 
 /**
  * Build Class Hierarchy for all the Classes. This class builds the Class
@@ -45,6 +48,7 @@ import java.util.*;
  */
 public class ClassTree {
 
+	private static Logger log = Logger.getLogger(ClassTree.class);
     /**
      * List of baseclasses. Contains only java.lang.Object. Can be used to get
      * the mapped listing of sub-classes.
@@ -87,6 +91,7 @@ public class ClassTree {
      * true.
      */
     public ClassTree(Configuration configuration, boolean noDeprecated) {
+    	log.info("ClassTree ");
         configuration.message.notice("doclet.Building_Tree");
         buildTree(configuration.root.classes(), configuration);
     }
@@ -121,6 +126,7 @@ public class ClassTree {
      * @param configuration the current configuration of the doclet.
      */
     private void buildTree(ClassDoc[] classes, Configuration configuration) {
+    	log.info("ClassTree buildTree");
         for (int i = 0; i < classes.length; i++) {
             if (configuration.nodeprecated &&
                     classes[i].tags("deprecated").length > 0) {

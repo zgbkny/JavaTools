@@ -190,6 +190,7 @@ class Start {
         String current;
         while(st.hasMoreTokens()){
             current = st.nextToken();
+            System.out.println("addToList:" + current);
             list.append(current);
         }
     }
@@ -340,7 +341,6 @@ class Start {
                     }
                     ListBuffer<String> args = new ListBuffer<String>();
                     for (int j = 0; j < optionLength-1; ++j) {
-                    	
                         args.append(argv[++i]);
                     }
                     setOption(arg, args.toList()); // 将命令和参数设置给options
